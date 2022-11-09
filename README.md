@@ -104,7 +104,7 @@ there are some questions that should likely be answered. Most notably for me are
 
 `imgui_toggle` is [licensed](./LICENSE) under the Zero-Clause BSD License (SPDX-License-Identifier: 0BSD). If you're interested in `imgui_toggle` under other terms, please contact the author.
 
-Copyright © 2022 [Chris March Dailey](https://cmd.wtf)
+Copyright © 2022 [Chris Marc Dailey](https://cmd.wtf)
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
 
@@ -116,5 +116,5 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 his [animated variant](https://github.com/ocornut/imgui/issues/1537#issuecomment-355569554), [nerdtronik's shift to theme colors](https://github.com/ocornut/imgui/issues/1537#issuecomment-780262461),
 and [ashifolfi's squircle](https://github.com/ocornut/imgui/issues/1537#issuecomment-1272612641) concept.
 
-As well, inspiration was derived from [Dear ImGui's current `Checkbox` implementation,](https://github.com/ocornut/imgui/blob/529cba19b09cf6db206de2b9eaa3152ecb2feff8/imgui_widgets.cpp#L1102),
+As well, inspiration was derived from [Dear ImGui's current `Checkbox` implementation](https://github.com/ocornut/imgui/blob/529cba19b09cf6db206de2b9eaa3152ecb2feff8/imgui_widgets.cpp#L1102),
 for the behavior, label drawing, and hopefully preparing to [handle mixed values/indeterminate states](https://github.com/ocornut/imgui/issues/2644) (albeit unsupported as of yet).
