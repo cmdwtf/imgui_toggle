@@ -114,7 +114,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 `imgui_toggle` drew inspiration from [ocornut's original share](https://github.com/ocornut/imgui/issues/1537#issuecomment-355562097),
 his [animated variant](https://github.com/ocornut/imgui/issues/1537#issuecomment-355569554), [nerdtronik's shift to theme colors](https://github.com/ocornut/imgui/issues/1537#issuecomment-780262461),
-and [ashifolfi's squircle](https://github.com/ocornut/imgui/issues/1537#issuecomment-1272612641) concept.
+and [ashifolfi's squircle](https://github.com/ocornut/imgui/issues/1537#issuecomment-1272612641) concept. Inspiration for border drawing came from [moebiussurfing](https://github.com/cmdwtf/imgui_toggle/issues/1#issue-1441329209).
 
 As well, inspiration was derived from [Dear ImGui's current `Checkbox` implementation](https://github.com/ocornut/imgui/blob/529cba19b09cf6db206de2b9eaa3152ecb2feff8/imgui_widgets.cpp#L1102),
 for the behavior, label drawing, and hopefully preparing to [handle mixed values/indeterminate states](https://github.com/ocornut/imgui/issues/2644) (albeit unsupported as of yet).
