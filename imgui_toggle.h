@@ -4,10 +4,13 @@
 
 enum ImGuiToggleFlags_
 {
-    ImGuiToggleFlags_None               = 0,
-    ImGuiToggleFlags_Animated           = 1 << 0, // The toggle should be animated. Mutually exclusive with ImGuiToggleFlags_Static.
-    ImGuiToggleFlags_Static             = 1 << 1, // The toggle should not animate. Mutually exclusive with ImGuiToggleFlags_Animated.
-    ImGuiToggleFlags_Default            = ImGuiToggleFlags_Static, // The default flags used when no ImGuiToggleFlags_ are specified.
+    ImGuiToggleFlags_None                   = 0,
+    ImGuiToggleFlags_Animated               = 1 << 0, // The toggle should be animated. Mutually exclusive with ImGuiToggleFlags_Static.
+    ImGuiToggleFlags_Static                 = 1 << 1, // The toggle should not animate. Mutually exclusive with ImGuiToggleFlags_Animated.
+    ImGuiToggleFlags_BorderedFrame          = 1 << 2, // The toggle should have a border drawn on the frame.
+    ImGuiToggleFlags_BorderedKnob           = 1 << 3, // The toggle should have a border drawn on the knob.
+    ImGuiToggleFlags_Bordered               = ImGuiToggleFlags_BorderedFrame | ImGuiToggleFlags_BorderedKnob, // Shorthand for bordered frame and knob.
+    ImGuiToggleFlags_Default                = ImGuiToggleFlags_Static, // The default flags used when no ImGuiToggleFlags_ are specified.
 };
 
 typedef int ImGuiToggleFlags;           // -> enum ImGuiToggleFlags_        // Flags: for Toggle() modes

@@ -32,13 +32,22 @@ static bool toggle_c = true;
 static bool toggle_d = true;
 static bool toggle_e = true;
 static bool toggle_f = true;
+static bool toggle_g = true;
 
 static float frame_rounding = 0.2f;
 static float knob_rounding = 0.2f;
 
+// use some lovely gray backgrounds for "off" toggles
+// the default will use your theme's frame background colors.
+ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.45f, 0.45f, 0.45f, 1.0f));
+ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.65f, 0.65f, 0.65f, 1.0f));
+
 // a default and default animated toggle
 ImGui::Toggle("Default Toggle", &toggle_a);
 ImGui::Toggle("Animated Toggle", &toggle_b, ImGuiToggleFlags_Animated);
+
+// this toggle draws a simple border around it's frame and knob
+ImGui::Toggle("Bordered Knob", &toggle_c, ImGuiToggleFlags_Bordered, 1.0f);
 
 // sliders for adjusting the rounding for the next two toggles.
 ImGui::SliderFloat("frame_rounding", &frame_rounding, 0.0f, 1.0f);
@@ -46,17 +55,20 @@ ImGui::SliderFloat("knob_rounding", &knob_rounding, 0.0f, 1.0f);
 
 // a default and animated toggle that can have their frames and knobs rounded
 // a rounding of 0 is completely square, a rounding of 1 is fully rounded.
-ImGui::Toggle("Square Toggle", &toggle_c, ImGuiToggleFlags_Default, frame_rounding, knob_rounding);
-ImGui::Toggle("Animated Square Toggle", &toggle_d, ImGuiToggleFlags_Animated, frame_rounding, knob_rounding);
+ImGui::Toggle("Square Toggle", &toggle_d, ImGuiToggleFlags_Default, frame_rounding, knob_rounding);
+ImGui::Toggle("Animated Square Toggle", &toggle_e, ImGuiToggleFlags_Animated, frame_rounding, knob_rounding);
 
 // this toggle uses stack-pushed style colors to change the way it displays
 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.66f, 0.45f, 1.0f));
 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 1.0f, 0.57f, 1.0f));
-ImGui::Toggle("Green Toggle", &toggle_e);
+ImGui::Toggle("Green Toggle", &toggle_f);
 ImGui::PopStyleColor(2);
 
 // this toggle shows no label
-ImGui::Toggle("##Toggle With Hidden Label", &toggle_f);
+ImGui::Toggle("##Toggle With Hidden Label", &toggle_g);
+
+// pop the FrameBg/FrameBgHover color styles
+ImGui::PopStyleColor(2);
 ```
 
 ## Limitations
@@ -68,6 +80,9 @@ adjust those these colors around your call to `ImGui::Toggle()`:
 - `ImGuiCol_Text`: Will be used as the color of the knob portion of the toggle.
 - `ImGuiCol_Button`: Will be used as the background color of the toggle when it is in the "on" position, and the widget is not hovered.
 - `ImGuiCol_ButtonHovered`: Will be used as the background color of the toggle when it is in the "on" position, and the widget is hovered over.
+- `ImGuiCol_FrameBg`: Will be used as the background color of the toggle when it is in the "off" position, and the widget is not hovered.
+- `ImGuiCol_FrameBgHovered`: Will be used as the background color of the toggle when it is in the "off" position, and the widget is hovered over.
+- `ImGuiCol_Border`: Will be used as the color drawn as the border on the background and knob if the related flags are passed.
 
 Unfortunately, the dark gray and light gray used while the toggle is in the "off" position are currently defined by the widget code itself and not by any theme color.
 

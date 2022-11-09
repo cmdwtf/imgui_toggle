@@ -72,13 +72,6 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
     constexpr float ToggleKnobOffset = 1.5f;
     constexpr float ToggleKnobDoubleOffset = ToggleKnobOffset * 2.0f;
 
-    // static colors
-    // FIXME: should be part of style
-    constexpr float dark_off_color = 0.45f;
-    constexpr float light_off_color = 0.65f;
-    constexpr ImVec4 color_gray_dark = ImVec4(dark_off_color, dark_off_color, dark_off_color, 1.0f);
-    constexpr ImVec4 color_gray_light = ImVec4(light_off_color, light_off_color, light_off_color, 1.0f);
-
     // context information
     ImGuiContext& g = *GImGui;
     const ImGuiStyle style = ImGui::GetStyle();
@@ -93,6 +86,8 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
     const bool is_rectangle_knob = knob_rounding < 1.0f;
     const bool is_animated = (flags & ImGuiToggleFlags_Animated) != 0;
     const bool is_static = (flags & ImGuiToggleFlags_Static) != 0;
+    const bool has_bordered_frame = (flags & ImGuiToggleFlags_BorderedFrame) != 0;
+    const bool has_bordered_knob = (flags & ImGuiToggleFlags_BorderedKnob) != 0;
 
     // users likely don't intend to double up on modes.
     IM_ASSERT(!is_circle_knob || !is_rectangle_knob);
@@ -104,7 +99,7 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
     const float radius = height * ToggleRadiusRatio;
     const float half_height = height * 0.5f;
     const float double_radius = radius * 2.0f;
-    const float frame_height = frame_rounding >= 0
+    const float background_rounding = frame_rounding >= 0
         ? height * frame_rounding
         : half_height;
 
@@ -118,7 +113,7 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
     }
 
     // the meat and potatoes: the actual toggle button
-    ImGuiButtonFlags button_flags = ImGuiButtonFlags_PressedOnClick;
+    const ImGuiButtonFlags button_flags = ImGuiButtonFlags_PressedOnClick;
     bool hovered, held;
     bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held, button_flags);
     if (pressed)
@@ -148,9 +143,12 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
 
     // FIXME: toggle knobs could get their own theme colors rather than using text & buttons.
     const ImU32 color_knob = ImGui::GetColorU32(colors[ImGuiCol_Text]);
-    const ImVec4 on_color_active = colors[ImGuiCol_ButtonActive];
-    const ImVec4 on_color_hover = colors[ImGuiCol_ButtonHovered];
-    const ImVec4 on_color = colors[ImGuiCol_Button];
+    const ImVec4 color_frame_off = colors[ImGuiCol_FrameBg];
+    const ImVec4 color_frame_off_hover = colors[ImGuiCol_FrameBgHovered];
+    const ImVec4 color_frame_on = colors[ImGuiCol_Button];
+    const ImVec4 color_frame_on_hover = colors[ImGuiCol_ButtonHovered];
+    //const ImVec4 color_frame_on_active = colors[ImGuiCol_ButtonActive];
+    const ImU32 color_border = ImGui::GetColorU32(colors[ImGuiCol_Border]);
 
     // select or interpolate the background color.
     ImU32 background_color;
@@ -158,37 +156,61 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
     if (g.HoveredId == id)
     {
         background_color = ImGui::GetColorU32(is_animated
-            ? ImLerp(color_gray_light, on_color_hover, t)
-            : (*v ? on_color_hover : color_gray_light));
+            ? ImLerp(color_frame_off_hover, color_frame_on_hover, t)
+            : (*v ? color_frame_on_hover : color_frame_off_hover));
     }
     else
     {
         background_color = ImGui::GetColorU32(is_animated
-            ? ImLerp(color_gray_dark, on_color, t)
-            : (*v ? on_color : color_gray_dark));
+            ? ImLerp(color_frame_off, color_frame_on, t)
+            : (*v ? color_frame_on : color_frame_off));
     }
 
-    // draw background
-    draw_list->AddRectFilled(pos, ImVec2(pos.x + width, pos.y + height), background_color, frame_height);
+    const ImVec2 frame_min = pos;
+    const ImVec2 frame_max = ImVec2(pos.x + width, pos.y + height);
 
-    // draw knob
+    // draw frame background
+    draw_list->AddRectFilled(frame_min, frame_max, background_color, background_rounding);
+
+    // draw frame border, if enabled
+    if (has_bordered_frame)
+    {
+        draw_list->AddRect(frame_min, frame_max, color_border, background_rounding);
+    }
+
     if (is_circle_knob)
     {
-        draw_list->AddCircleFilled(ImVec2(pos.x + radius + t * (width - double_radius), pos.y + radius), radius - ToggleKnobOffset, color_knob);
+        const ImVec2 knob_center = ImVec2(pos.x + radius + t * (width - double_radius), pos.y + radius);
+        const float knob_radius = radius - ToggleKnobOffset;
+
+        // draw circle knob
+        draw_list->AddCircleFilled(knob_center, knob_radius, color_knob);
+
+        // draw knob border, if enabled
+        if (has_bordered_knob)
+        {
+            draw_list->AddCircle(knob_center, knob_radius, color_border);
+        }
     }
     else if (is_rectangle_knob)
     {
-        float knob_rounded_height = height * knob_rounding;
+        const float knob_rounded_height = height * knob_rounding;
+        const float knob_left = (t * (width - double_radius)) + ToggleKnobOffset;
+        const float knob_top = ToggleKnobOffset;
+        const float knob_bottom = height - ToggleKnobOffset;
+        const float knob_right = knob_left + double_radius - ToggleKnobDoubleOffset;
 
-        float knob_left = (t * (width - double_radius)) + ToggleKnobOffset;
-        float knob_top = ToggleKnobOffset;
-        float knob_bottom = height - ToggleKnobOffset;
-        float knob_right = knob_left + double_radius - ToggleKnobDoubleOffset;
+        const ImVec2 knob_min = pos + ImVec2(knob_left, knob_top);
+        const ImVec2 knob_max = pos + ImVec2(knob_right, knob_bottom);
 
-        ImVec2 knob_min = pos + ImVec2(knob_left, knob_top);
-        ImVec2 knob_max = pos + ImVec2(knob_right, knob_bottom);
-
+        // draw rectangle/squircle knob 
         draw_list->AddRectFilled(knob_min, knob_max, color_knob, knob_rounded_height);
+
+        // draw knob border, if enabled
+        if (has_bordered_knob)
+        {
+            draw_list->AddRect(knob_min, knob_max, color_border, knob_rounded_height);
+        }
     }
     else
     {
@@ -196,7 +218,7 @@ static bool ToggleInternal(const char* label, bool* v, ImGuiToggleFlags flags, f
         IM_ASSERT(false && "No toggle knob type to draw.");
     }
 
-    ImVec2 label_pos = ImVec2(toggle_bb.Max.x + style.ItemInnerSpacing.x, toggle_bb.Min.y + style.FramePadding.y);
+    const ImVec2 label_pos = ImVec2(toggle_bb.Max.x + style.ItemInnerSpacing.x, toggle_bb.Min.y + style.FramePadding.y);
 
     if (g.LogEnabled)
     {
