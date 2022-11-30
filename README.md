@@ -32,10 +32,7 @@ static bool toggle_c = true;
 static bool toggle_d = true;
 static bool toggle_e = true;
 static bool toggle_f = true;
-static bool toggle_g = true;
-
-static float frame_rounding = 0.2f;
-static float knob_rounding = 0.2f;
+static bool toggle_custom = true;
 
 // use some lovely gray backgrounds for "off" toggles
 // the default will use your theme's frame background colors.
@@ -49,23 +46,89 @@ ImGui::Toggle("Animated Toggle", &toggle_b, ImGuiToggleFlags_Animated);
 // this toggle draws a simple border around it's frame and knob
 ImGui::Toggle("Bordered Knob", &toggle_c, ImGuiToggleFlags_Bordered, 1.0f);
 
-// sliders for adjusting the rounding for the next two toggles.
-ImGui::SliderFloat("frame_rounding", &frame_rounding, 0.0f, 1.0f);
-ImGui::SliderFloat("knob_rounding", &knob_rounding, 0.0f, 1.0f);
-
-// a default and animated toggle that can have their frames and knobs rounded
-// a rounding of 0 is completely square, a rounding of 1 is fully rounded.
-ImGui::Toggle("Square Toggle", &toggle_d, ImGuiToggleFlags_Default, frame_rounding, knob_rounding);
-ImGui::Toggle("Animated Square Toggle", &toggle_e, ImGuiToggleFlags_Animated, frame_rounding, knob_rounding);
-
 // this toggle uses stack-pushed style colors to change the way it displays
 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.66f, 0.45f, 1.0f));
 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 1.0f, 0.57f, 1.0f));
-ImGui::Toggle("Green Toggle", &toggle_f);
+ImGui::Toggle("Green Toggle", &toggle_d);
 ImGui::PopStyleColor(2);
 
+ImGui::Toggle("Toggle with A11y Labels", &toggle_e, ImGuiToggleFlags_A11yLabels);
+
 // this toggle shows no label
-ImGui::Toggle("##Toggle With Hidden Label", &toggle_g);
+ImGui::Toggle("##Toggle With Hidden Label", &toggle_f);
+
+//////////////////////////////////////////////////////////////////////////
+// Custom Toggle
+
+ImGui::BeginChild("Custom Toggle Window", ImVec2(), true, ImGuiWindowFlags_MenuBar);
+ImGui::BeginMenuBar();
+ImGui::Text("Custom Toggle");
+ImGui::EndMenuBar();
+
+static ImGuiToggleConfig config;
+ImGui::Toggle("Customized Toggle", &toggle_custom, config);
+ImGui::NewLine();
+
+// animation speed controls how quickly the toggle animates. if set to 0, animation is disabled.
+ImGui::SliderFloat("AnimationSpeed", &config.AnimationSpeed, ImGuiToggleConstants::AnimationSpeedMinimum, 2.0f);
+
+// frame rounding sets how round the frame is when drawn, where 0 is a rectangle, and 1 is a circle.
+ImGui::SliderFloat("FrameRounding", &config.FrameRounding, ImGuiToggleConstants::FrameRoundingMinimum, ImGuiToggleConstants::FrameRoundingMaximum);
+
+// knob rounding sets how round the knob is when drawn, where 0 is a rectangle, and 1 is a circle.
+ImGui::SliderFloat("KnobRounding", &config.KnobRounding, ImGuiToggleConstants::KnobRoundingMinimum, ImGuiToggleConstants::KnobRoundingMaximum);
+
+// size controls the width and the height of the toggle frame
+ImGui::SliderFloat2("Size", &config.Size.x, 0.0f, 100.0f, "%.0f");
+
+// width ratio sets how wide the toggle is with relation to the frame height. if Size is non-zero, this is unused.
+ImGui::SliderFloat("WidthRatio", &config.WidthRatio, ImGuiToggleConstants::WidthRatioMinimum, ImGuiToggleConstants::WidthRatioMaximum);
+
+// knob inset controls how many pixels the knob is set into the frame. negative values will cause it to grow outside the frame.
+ImGui::SliderFloat("KnobInset", &config.KnobInset, ImGuiToggleConstants::KnobInsetMinimum, ImGui::GetFrameHeight() * 0.5f);
+
+// how thick should the frame border be (if enabled)
+ImGui::SliderFloat("FrameBorderThickness", &config.FrameBorderThickness, 0.0f, 3.0f);
+
+// how thick should the knob border be (if enabled)
+ImGui::SliderFloat("KnobBorderThickness", &config.KnobBorderThickness, 0.0f, 3.0f);
+
+// flags for various toggle features
+ImGui::Columns(2);
+ImGui::Text("Meta Flags");
+ImGui::CheckboxFlags("Bordered", &config.Flags, ImGuiToggleFlags_Bordered);
+ImGui::NextColumn();
+ImGui::CheckboxFlags("BorderedFrame", &config.Flags, ImGuiToggleFlags_BorderedFrame);
+ImGui::CheckboxFlags("BorderedKnob", &config.Flags, ImGuiToggleFlags_BorderedKnob);
+ImGui::CheckboxFlags("A11yLabels", &config.Flags, ImGuiToggleFlags_A11yLabels);
+ImGui::CheckboxFlags("HighlightEnabledKnob", &config.Flags, ImGuiToggleFlags_HighlightEnabledKnob);
+ImGui::Columns();
+
+if (ImGui::Button("Reset Config"))
+{
+    config = ImGuiToggleConfig();
+}
+ImGui::SameLine();
+
+if (ImGui::Button("iOS Style"))
+{
+    config = ImGuiToggleConfig();
+    config.Flags |= ImGuiToggleFlags_A11yLabels;
+}
+ImGui::SameLine();
+
+if (ImGui::Button("Material Style"))
+{
+    config = ImGuiToggleConfig();
+    config.Flags |= ImGuiToggleFlags_HighlightEnabledKnob;
+    config.KnobInset = -3.0f;
+    config.WidthRatio = 1.714f;
+}
+
+ImGui::EndChild();
+
+// End Custom Toggle
+//////////////////////////////////////////////////////////////////////////
 
 // pop the FrameBg/FrameBgHover color styles
 ImGui::PopStyleColor(2);
@@ -78,6 +141,7 @@ few shared theme colors for styling. For now, it is easiest to use `ImGui::PushS
 adjust those these colors around your call to `ImGui::Toggle()`:
 
 - `ImGuiCol_Text`: Will be used as the color of the knob portion of the toggle.
+- `ImGuiCol_CheckMark`: Will be used as color of the knob when the knob is enabled, if the `ImGuiToggleFlags_HighlightEnabledKnob` flag is set.
 - `ImGuiCol_Button`: Will be used as the background color of the toggle when it is in the "on" position, and the widget is not hovered.
 - `ImGuiCol_ButtonHovered`: Will be used as the background color of the toggle when it is in the "on" position, and the widget is hovered over.
 - `ImGuiCol_FrameBg`: Will be used as the background color of the toggle when it is in the "off" position, and the widget is not hovered.
