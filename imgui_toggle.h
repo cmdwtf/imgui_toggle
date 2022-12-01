@@ -15,7 +15,7 @@ namespace ImGui
     // - They represent two mutually exclusive states, with an optional animation on the UI when toggled.
     // Optional parameters:
     // - flags: Values from the ImGuiToggleFlags_ enumeration to set toggle modes.
-    // - speed: Animation speed scalar. (0,...] default: 1.0f (Overloads with this parameter imply ImGuiToggleFlags_Animated)
+    // - animation_duration: Animation duration. Amount of time in seconds the toggle should animate. (0,...] default: 1.0f (Overloads with this parameter imply ImGuiToggleFlags_Animated)
     // - frame_rounding: A scalar that controls how rounded the toggle frame is. 0 is square, 1 is round. (0, 1) default 1.0f
     // - knob_rounding: A scalar that controls how rounded the toggle knob is. 0 is square, 1 is round. (0, 1) default 1.0f
     // - size: A width and height to draw the toggle at. Defaults to `ImGui::GetFrameHeight()` and that height * Phi for the width.
@@ -23,9 +23,9 @@ namespace ImGui
     // - The overload taking a reference to an ImGuiToggleConfig structure allows for more complete control over the widget.
     IMGUI_API bool Toggle(const char* label, bool* v, const ImVec2& size = ImVec2());
     IMGUI_API bool Toggle(const char* label, bool* v, ImGuiToggleFlags flags, const ImVec2& size = ImVec2());
-    IMGUI_API bool Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float speed, const ImVec2& size = ImVec2());
+    IMGUI_API bool Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float animation_duration, const ImVec2& size = ImVec2());
     IMGUI_API bool Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float frame_rounding, float knob_rounding, const ImVec2& size = ImVec2());
-    IMGUI_API bool Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float speed, float frame_rounding, float knob_rounding, const ImVec2& size = ImVec2());
+    IMGUI_API bool Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float animation_duration, float frame_rounding, float knob_rounding, const ImVec2& size = ImVec2());
     IMGUI_API bool Toggle(const char* label, bool* v, const ImGuiToggleConfig& config);
 
 } // namespace ImGui
@@ -58,14 +58,14 @@ namespace ImGuiToggleConstants
     // d = 2r
     constexpr float DiameterToRadiusRatio = 0.5f;
 
-    // Animation is disabled with a speed of 0.
-    constexpr float AnimationSpeedDisabled = 0.0f;
+    // Animation is disabled with a animation_duration of 0.
+    constexpr float AnimationDurationDisabled = 0.0f;
 
-    // The default animation speed. (1.0f: Default speed.)
-    constexpr float AnimationSpeedDefault = 1.0f;
+    // The default animation duration, in seconds. (0.1f: 100 ms.)
+    constexpr float AnimationDurationDefault = 0.1f;
 
-    // The lowest allowable value for animation speed. (0.0f: Disabled animation.)
-    constexpr float AnimationSpeedMinimum = AnimationSpeedDisabled;
+    // The lowest allowable value for animation duration. (0.0f: Disabled animation.)
+    constexpr float AnimationDurationMinimum = AnimationDurationDisabled;
 
     // The default frame rounding value. (1.0f: Full rounding.)
     constexpr float FrameRoundingDefault = 1.0f;
@@ -113,8 +113,8 @@ struct ImGuiToggleConfig
     // Flags that control the toggle's behavior and display.
     ImGuiToggleFlags Flags = ImGuiToggleFlags_Default;
 
-    // The a speed multiplier the toggle should animate at. If 0, animation will be disabled.
-    float AnimationSpeed = ImGuiToggleConstants::AnimationSpeedDefault;
+    // The a duration in seconds that the toggle should animate for. If 0, animation will be disabled.
+    float AnimationDuration = ImGuiToggleConstants::AnimationDurationDefault;
 
     // A scalar that controls how rounded the toggle frame is. 0 is square, 1 is round. (0, 1) default 1.0f
     float FrameRounding = ImGuiToggleConstants::FrameRoundingDefault;

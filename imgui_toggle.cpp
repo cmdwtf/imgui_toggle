@@ -20,18 +20,21 @@ namespace
     void DrawToggleCircleKnob(ImDrawList* draw_list, const ImRect& bb, const ImGuiToggleConfig& config, float radius, float t, ImU32 color_knob, ImU32 color_knob_border);
     void DrawToggleA11yLabels(ImDrawList* draw_list, const ImRect& bb, const ImGuiToggleConfig& config, const ImVec2& frame_padding);
     void DrawToggleFrame(ImDrawList* draw_list, const ImRect& bb, const ImGuiToggleConfig& config, ImU32 color_frame, ImU32 color_frame_border);
-    float ToggleGetAnimationT(ImGuiID id, bool v, bool is_mixed_value, const ImGuiToggleConfig& config);
+    float GetToggleAnimationT(ImGuiID id, bool v, bool is_mixed_value, const ImGuiToggleConfig& config);
     bool ToggleBehavior(const ImRect bb, const ImGuiID id, const char* label, bool* v);
     void ToggleValidateConfig(ImGuiToggleConfig& config);
 
     // inline helpers
+
+    // lerp, but backwards!
+    template<typename T> constexpr inline T ImInvLerp(T a, T b, float value) { return (T)((value - a) / (b - a)); }
 
     // sets the given config structure's values to the
     // default ones used by the `Toggle()` overloads.
     inline void SetToAliasDefaults(ImGuiToggleConfig& config)
     {
         config.Flags = ImGuiToggleFlags_Default;
-        config.AnimationSpeed = AnimationSpeedDisabled;
+        config.AnimationDuration = AnimationDurationDisabled;
         config.FrameRounding = FrameRoundingDefault;
         config.KnobRounding = KnobRoundingDefault;
     }
@@ -71,19 +74,19 @@ bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, const ImV
     ::_internalConfig.Size = size;
 
     // if the user is using any animation flags,
-    // set the default speed.
+    // set the default duration.
     if ((flags & ImGuiToggleFlags_Animated) != 0)
     {
-        _internalConfig.AnimationSpeed = AnimationSpeedDefault;
+        _internalConfig.AnimationDuration = AnimationDurationDefault;
     }
     
     return ::ToggleInternal(label, v, ::_internalConfig);
 }
 
-bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float speed, const ImVec2& size /*= ImVec2()*/)
+bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float animation_duration, const ImVec2& size /*= ImVec2()*/)
 {
     // this overload implies the toggle should be animated.
-    if (speed > 0 && (flags & ImGuiToggleFlags_AnimatedKnob) != 0)
+    if (animation_duration > 0 && (flags & ImGuiToggleFlags_AnimatedKnob) != 0)
     {
         // if the user didn't specify ImGuiToggleFlags_AnimatedKnob, enable all animations.
         flags = flags | (ImGuiToggleFlags_Animated);
@@ -91,7 +94,7 @@ bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float spe
 
     ::SetToAliasDefaults(::_internalConfig);
     ::_internalConfig.Flags = flags;
-    ::_internalConfig.AnimationSpeed = speed;
+    ::_internalConfig.AnimationDuration = animation_duration;
     ::_internalConfig.Size = size;
 
     return ::ToggleInternal(label, v, ::_internalConfig);
@@ -108,17 +111,17 @@ bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float fra
     return ::ToggleInternal(label, v, ::_internalConfig);
 }
 
-bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float speed, float frame_rounding, float knob_rounding, const ImVec2& size /*= ImVec2()*/)
+bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, float animation_duration, float frame_rounding, float knob_rounding, const ImVec2& size /*= ImVec2()*/)
 {
     // this overload implies the toggle should be animated.
-    if (speed > 0 && (flags & ImGuiToggleFlags_AnimatedKnob) != 0)
+    if (animation_duration > 0 && (flags & ImGuiToggleFlags_AnimatedKnob) != 0)
     {
         // if the user didn't specify ImGuiToggleFlags_AnimatedKnob, enable all animations.
         flags = flags | (ImGuiToggleFlags_Animated);
     }
 
     ::_internalConfig.Flags = flags;
-    ::_internalConfig.AnimationSpeed = speed;
+    ::_internalConfig.AnimationDuration = animation_duration;
     ::_internalConfig.FrameRounding = frame_rounding;
     ::_internalConfig.KnobRounding = knob_rounding;
     ::_internalConfig.Size = size;
@@ -204,8 +207,8 @@ namespace
             config.Flags = ImGuiToggleFlags_Default;
         }
 
-        // a zero or negative speed would prevent animation.
-        config.AnimationSpeed = ImMax(config.AnimationSpeed, AnimationSpeedMinimum);
+        // a zero or negative duration would prevent animation.
+        config.AnimationDuration = ImMax(config.AnimationDuration, AnimationDurationMinimum);
 
         // keep our size/scale and rounding numbers sane.
         config.FrameRounding = ImClamp(config.FrameRounding, FrameRoundingMinimum, FrameRoundingMaximum);
@@ -240,12 +243,10 @@ namespace
         return pressed;
     }
 
-    float ToggleGetAnimationT(ImGuiID id, bool v, bool is_mixed_value, const ImGuiToggleConfig& config)
+    float GetToggleAnimationT(ImGuiID id, bool v, bool is_mixed_value, const ImGuiToggleConfig& config)
     {
-        // a fixed value that works nicely for animation.
-        constexpr float ToggleAnimationSpeedScaler = 0.08f;
         const ImGuiContext& g = *GImGui;
-        const bool is_animated = (config.Flags & ImGuiToggleFlags_AnimatedKnob) != 0;
+        const bool is_animated = (config.Flags & ImGuiToggleFlags_AnimatedKnob) != 0 && config.AnimationDuration > 0;
 
         float t = is_mixed_value
             ? 0.5f
@@ -253,8 +254,7 @@ namespace
 
         if (is_animated && g.LastActiveId == id)
         {
-            float speed_mul = 1.0f / config.AnimationSpeed;
-            float t_anim = ImSaturate(g.LastActiveIdTimer / (speed_mul * ToggleAnimationSpeedScaler));
+            const float t_anim = ImSaturate(ImInvLerp(0.0f, config.AnimationDuration, g.LastActiveIdTimer));
             t = v ? (t_anim) : (1.0f - t_anim);
         }
 
@@ -380,7 +380,7 @@ namespace
         // modes with readable names
         const bool is_circle_knob = config.KnobRounding >= 1.0f;
         const bool is_rectangle_knob = config.KnobRounding < 1.0f;
-        const bool is_animated = (config.Flags & ImGuiToggleFlags_AnimatedKnob) != 0;
+        const bool is_animated = (config.Flags & ImGuiToggleFlags_AnimatedKnob) != 0 && config.AnimationDuration > 0;
         const bool is_animated_frame_color = is_animated && (config.Flags & ImGuiToggleFlags_AnimatedFrameColor) != 0;
         const bool is_animated_knob_color = is_animated && (config.Flags & ImGuiToggleFlags_AnimatedKnobColor) != 0;
         const bool has_bordered_knob = (config.Flags & ImGuiToggleFlags_BorderedKnob) != 0;
@@ -396,7 +396,7 @@ namespace
         // but default to 1/0 for if we aren't animating at all,
         // or 0.5f if we have a mixed value. Also, trying to keep parity with
         // undocumented tristate/mixed/indeterminate checkbox (#2644)
-        const float t = ::ToggleGetAnimationT(id, *v, is_mixed_value, config);
+        const float t = ::GetToggleAnimationT(id, *v, is_mixed_value, config);
 
         ImU32 color_frame;
         ImU32 color_knob;
