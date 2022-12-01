@@ -69,6 +69,13 @@ bool ImGui::Toggle(const char* label, bool* v, ImGuiToggleFlags flags, const ImV
     ::SetToAliasDefaults(::_internalConfig);
     ::_internalConfig.Flags = flags;
     ::_internalConfig.Size = size;
+
+    // if the user is using any animation flags,
+    // set the default speed.
+    if ((flags & ImGuiToggleFlags_Animated) != 0)
+    {
+        _internalConfig.AnimationSpeed = AnimationSpeedDefault;
+    }
     
     return ::ToggleInternal(label, v, ::_internalConfig);
 }
