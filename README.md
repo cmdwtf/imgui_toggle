@@ -1,6 +1,6 @@
 # 🔘 imgui_toggle
 
-A small Dear ImGui widget that implements a modern toggle style switch.
+A small Dear ImGui widget that implements a modern toggle style switch. Requires C++11.
 
 ## Overview
 
@@ -17,13 +17,13 @@ a label in the same way, and toggling the value by clicking that associated labe
 
 ![`imgui_toggle` example animated gif](./.meta/imgui_toggle_example.gif)
 
-_An example of `imgui_toggle`, produced by the usage code below, as an animated gif._
+_An example of `imgui_toggle`, produced by the [example code](./EXAMPLE.md), as an animated gif._
 
 ## Usage
 
-Add `imgui_toggle.cpp` and `imgui_toggle.h` to your project, and include `imgui_toggle.h` in the source file you wish to use toggles.
+Add the `*.cpp` and `*.h` files to your project, and include `imgui_toggle.h` in the source file you wish to use toggles.
 
-See `imgui_toggle.h` for the API, or below for an example.
+See `imgui_toggle.h` for the API, or below for a brief example. As well, [EXAMPLE.md](./EXAMPLE.md) has a more thorough usage example.
 
 ```cpp
 static bool toggle_a = true;
@@ -32,19 +32,17 @@ static bool toggle_c = true;
 static bool toggle_d = true;
 static bool toggle_e = true;
 static bool toggle_f = true;
-static bool toggle_custom = true;
 
-ImVec4 green(0.16f, 0.66f, 0.45f, 1.0f);
-ImVec4 green_hover(0.0f, 1.0f, 0.57f, 1.0f);
+const ImVec4 green(0.16f, 0.66f, 0.45f, 1.0f);
+const ImVec4 green_hover(0.0f, 1.0f, 0.57f, 1.0f);
 
-ImVec4 purple(0.4f, 0.08f, 0.97f, 1.0f);
-ImVec4 purple_dim(0.78f, 0.65f, 0.99f, 1.0f);
-ImVec4 purple_hover(0.53f, 0.08f, 1.0f, 1.0f);
+const ImVec4 gray_dim(0.45f, 0.45f, 0.45f, 1.0f);
+const ImVec4 gray(0.65f, 0.65f, 0.65f, 1.0f);
 
 // use some lovely gray backgrounds for "off" toggles
 // the default will use your theme's frame background colors.
-ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.45f, 0.45f, 0.45f, 1.0f));
-ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.65f, 0.65f, 0.65f, 1.0f));
+ImGui::PushStyleColor(ImGuiCol_FrameBg, gray_dim);
+ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, gray);
 
 // a default and default animated toggle
 ImGui::Toggle("Default Toggle", &toggle_a);
@@ -59,120 +57,10 @@ ImGui::PushStyleColor(ImGuiCol_ButtonHovered, green_hover);
 ImGui::Toggle("Green Toggle", &toggle_d);
 ImGui::PopStyleColor(2);
 
-ImGui::Toggle("Toggle with A11y Labels", &toggle_e, ImGuiToggleFlags_A11yLabels);
+ImGui::Toggle("Toggle with A11y Labels", &toggle_e, ImGuiToggleFlags_A11y);
 
 // this toggle shows no label
 ImGui::Toggle("##Toggle With Hidden Label", &toggle_f);
-
-//////////////////////////////////////////////////////////////////////////
-// Custom Toggle
-ImGui::Separator();
-ImGui::Text("Custom Toggle");
-
-static ImGuiToggleConfig config;
-ImGui::Toggle("Customized Toggle", &toggle_custom, config);
-ImGui::NewLine();
-
-// some values to use for slider limits
-const float max_height = config.Size.y > 0 ? config.Size.y : ImGui::GetFrameHeight();
-const float half_max_height = max_height * 0.5f;
-
-// animation duration controls how long the toggle animates, in seconds. if set to 0, animation is disabled.
-if (ImGui::SliderFloat("Animation Duration (seconds)", &config.AnimationDuration, ImGuiToggleConstants::AnimationDurationMinimum, 2.0f))
-{
-    // if the user adjusted the animation duration slider, go ahead and turn on the animation flags.
-    config.Flags |= ImGuiToggleFlags_Animated;
-}
-
-// frame rounding sets how round the frame is when drawn, where 0 is a rectangle, and 1 is a circle.
-ImGui::SliderFloat("Frame Rounding (scale)", &config.FrameRounding, ImGuiToggleConstants::FrameRoundingMinimum, ImGuiToggleConstants::FrameRoundingMaximum);
-
-// knob rounding sets how round the knob is when drawn, where 0 is a rectangle, and 1 is a circle.
-ImGui::SliderFloat("Knob Rounding (scale)", &config.KnobRounding, ImGuiToggleConstants::KnobRoundingMinimum, ImGuiToggleConstants::KnobRoundingMaximum);
-
-// size controls the width and the height of the toggle frame
-ImGui::SliderFloat2("Size (px)", &config.Size.x, 0.0f, 100.0f, "%.0f");
-
-// knob offset controls how far into or out of the frame the knob should draw.
-ImGui::SliderFloat2("Knob Offset (px)", &config.KnobOffset.x, -half_max_height, half_max_height);
-
-// width ratio sets how wide the toggle is with relation to the frame height. if Size is non-zero, this is unused.
-ImGui::SliderFloat("Width Ratio (scale)", &config.WidthRatio, ImGuiToggleConstants::WidthRatioMinimum, ImGuiToggleConstants::WidthRatioMaximum);
-
-// knob inset controls how many pixels the knob is set into the frame. negative values will cause it to grow outside the frame.
-ImGui::SliderFloat("Knob Inset (px)", &config.KnobInset, ImGuiToggleConstants::KnobInsetMinimum, half_max_height);
-
-// how thick should the frame border be (if enabled)
-ImGui::SliderFloat("Frame Border Thickness (px)", &config.FrameBorderThickness, 0.0f, 3.0f);
-
-// how thick should the knob border be (if enabled)
-ImGui::SliderFloat("Knob Border Thickness (px)", &config.KnobBorderThickness, 0.0f, 3.0f);
-
-// flags for various toggle features
-ImGui::Columns(2);
-ImGui::Text("Meta Flags");
-ImGui::CheckboxFlags("Bordered", &config.Flags, ImGuiToggleFlags_Bordered);
-ImGui::CheckboxFlags("Animated", &config.Flags, ImGuiToggleFlags_Animated);
-ImGui::NextColumn();
-ImGui::CheckboxFlags("AnimatedKnob", &config.Flags, ImGuiToggleFlags_AnimatedKnob);
-ImGui::CheckboxFlags("AnimatedFrameColor", &config.Flags, ImGuiToggleFlags_AnimatedFrameColor);
-ImGui::CheckboxFlags("AnimatedKnobColor", &config.Flags, ImGuiToggleFlags_AnimatedKnobColor);
-ImGui::CheckboxFlags("BorderedFrame", &config.Flags, ImGuiToggleFlags_BorderedFrame);
-ImGui::CheckboxFlags("BorderedKnob", &config.Flags, ImGuiToggleFlags_BorderedKnob);
-ImGui::CheckboxFlags("A11yLabels", &config.Flags, ImGuiToggleFlags_A11yLabels);
-ImGui::Columns();
-
-if (ImGui::Button("Reset Config"))
-{
-    config = ImGuiToggleConfig();
-}
-ImGui::SameLine();
-
-if (ImGui::Button("Rectangle Style"))
-{
-    // setup config
-    config = ImGuiToggleConfig();
-    config.Flags |= ImGuiToggleFlags_Animated;
-    config.FrameRounding = 0.3f;
-    config.KnobRounding = 0.3f;
-    config.AnimationDuration = 1.5f;
-}
-ImGui::SameLine();
-
-if (ImGui::Button("iOS Style"))
-{
-    // setup colors
-    static ImGuiTogglePalette ios_palette;
-    ios_palette.FrameOn = green;
-    ios_palette.FrameOnHover = green_hover;
-
-    // setup config
-    config = ImGuiToggleConfig();
-    config.Flags |= ImGuiToggleFlags_A11yLabels | ImGuiToggleFlags_Animated;
-    config.Palette = &ios_palette;
-}
-ImGui::SameLine();
-
-if (ImGui::Button("Material Style"))
-{
-    // setup colors
-    static ImGuiTogglePalette material_palette;
-    material_palette.FrameOn = purple_dim;
-    material_palette.FrameOnHover = purple_dim;
-    material_palette.KnobOn = purple;
-    material_palette.KnobOnHover = purple_hover;
-
-    // setup config
-    config = ImGuiToggleConfig();
-    config.Flags |= ImGuiToggleFlags_Animated;
-    config.Size = ImVec2(37, 16);
-    config.KnobInset = -2.5f;
-    config.KnobOffset = ImVec2(-2.0f, 0);
-    config.Palette = &material_palette;
-}
-
-// End Custom Toggle
-//////////////////////////////////////////////////////////////////////////
 
 // pop the FrameBg/FrameBgHover color styles
 ImGui::PopStyleColor(2);
@@ -190,10 +78,10 @@ Notably this also allows providing a pointer to a `ImGuiTogglePalette` structure
 
 Since `imgui_toggle` isn't part of Dear ImGui proper, it doesn't have any direct references in `ImGuiCol_` for styling. `imgui_toggle` in addition to the method described above, you can use `ImGui::PushStyleColor()` and `ImGui::PopStyleColor()` to adjust the following theme colors around your call to `ImGui::Toggle()`:
 
-- `ImGuiCol_Text`: Will be used as the color of the knob portion of the toggle.
+- `ImGuiCol_Text`: Will be used as the color of the knob portion of the toggle, and the color of the accessibility glyph if enabled and "on".
 - `ImGuiCol_Button`: Will be used as the frame color of the toggle when it is in the "on" position, and the widget is not hovered.
 - `ImGuiCol_ButtonHovered`: Will be used as the frame color of the toggle when it is in the "on" position, and the widget is hovered over.
-- `ImGuiCol_FrameBg`: Will be used as the frame color of the toggle when it is in the "off" position, and the widget is not hovered.
+- `ImGuiCol_FrameBg`: Will be used as the frame color of the toggle when it is in the "off" position, and the widget is not hovered. Also used for the color of the accessibility glyph if enabled and "off".
 - `ImGuiCol_FrameBgHovered`: Will be used as the frame color of the toggle when it is in the "off" position, and the widget is hovered over.
 - `ImGuiCol_Border`: Will be used as the color drawn as the border on the frame and knob if the related flags are passed.
 
