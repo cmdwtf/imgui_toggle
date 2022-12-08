@@ -38,33 +38,39 @@ static void imgui_toggle_example()
 
 static void imgui_toggle_simple()
 {
-	static bool toggle_a = true;
-	static bool toggle_b = true;
-	static bool toggle_c = true;
-	static bool toggle_d = true;
-	static bool toggle_e = true;
-	static bool toggle_f = true;
+	static bool values[] = { true, true, true, true, true, true, true, true };
+	size_t value_index = 0;
 
 	const ImVec4 green(0.16f, 0.66f, 0.45f, 1.0f);
 	const ImVec4 green_hover(0.0f, 1.0f, 0.57f, 1.0f);
+	const ImVec4 salmon(1.0f, 0.43f, 0.35f, 1.0f);
+	const ImVec4 green_shadow(0.0f, 1.0f, 0.0f, 0.4f);
 
 	// a default and default animated toggle
-	ImGui::Toggle("Default Toggle", &toggle_a);
-	ImGui::Toggle("Animated Toggle", &toggle_b, ImGuiToggleFlags_Animated);
+	ImGui::Toggle("Default Toggle", &values[value_index++]);
+	ImGui::Toggle("Animated Toggle", &values[value_index++], ImGuiToggleFlags_Animated);
 
 	// this toggle draws a simple border around it's frame and knob
-	ImGui::Toggle("Bordered Knob", &toggle_c, ImGuiToggleFlags_Bordered, 1.0f);
+	ImGui::Toggle("Bordered Knob", &values[value_index++], ImGuiToggleFlags_Bordered, 1.0f);
+
+	// this toggle draws a simple shadow around it's frame and knob
+	ImGui::PushStyleColor(ImGuiCol_BorderShadow, green_shadow);
+	ImGui::Toggle("Shadowed Knob", &values[value_index++], ImGuiToggleFlags_Shadowed, 1.0f);
+
+	// this toggle draws the shadow & and the border around it's frame and knob.
+	ImGui::Toggle("Bordered + Shadowed Knob", &values[value_index++], ImGuiToggleFlags_Bordered | ImGuiToggleFlags_Shadowed, 1.0f);
+	ImGui::PopStyleColor(1);
 
 	// this toggle uses stack-pushed style colors to change the way it displays
 	ImGui::PushStyleColor(ImGuiCol_Button, green);
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, green_hover);
-	ImGui::Toggle("Green Toggle", &toggle_d);
+	ImGui::Toggle("Green Toggle", &values[value_index++]);
 	ImGui::PopStyleColor(2);
 
-	ImGui::Toggle("Toggle with A11y Labels", &toggle_e, ImGuiToggleFlags_A11y);
+	ImGui::Toggle("Toggle with A11y Labels", &values[value_index++], ImGuiToggleFlags_A11y);
 
 	// this toggle shows no label
-	ImGui::Toggle("##Toggle With Hidden Label", &toggle_f);
+	ImGui::Toggle("##Toggle With Hidden Label", &values[value_index++]);
 }
 
 static void imgui_toggle_custom()

@@ -28,6 +28,9 @@ struct IMGUI_API ImOffsetRect
     float       GetWidth() const { return Left + Right; }
     float       GetHeight() const { return Top + Bottom; }
     float       GetAverage() const { return (Top + Left + Bottom + Right) / 4.0f; }
+    ImOffsetRect MirrorHorizontally() const { return ImOffsetRect(Top, Right, Bottom, Left); }
+    ImOffsetRect MirrorVertically() const { return ImOffsetRect(Bottom, Left, Top, Right); }
+    ImOffsetRect Mirror() const { return ImOffsetRect(Bottom, Right, Top, Left); }
 };
 
 // Helpers: ImOffsetRect operators

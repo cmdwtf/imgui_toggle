@@ -7,6 +7,7 @@
 struct ImGuiToggleConfig;                   // Configuration data to fully customize a toggle.
 struct ImGuiToggleStateConfig;              // The data describing how to draw a toggle in a given state.
 struct ImGuiTogglePalette;                  // Color data to adjust how a toggle is drawn.
+
 typedef int ImGuiToggleFlags;               // -> enum ImGuiToggleFlags_        // Flags: for Toggle() modes
 typedef int ImGuiToggleA11yStyle;            // -> enum ImGuiToggleA11yStyle_   // Describes how to draw A11y labels.
 
@@ -42,9 +43,12 @@ enum ImGuiToggleFlags_
                                                       // Bits 1-2 reserved.
     ImGuiToggleFlags_BorderedFrame          = 1 << 3, // The toggle should have a border drawn on the frame.
     ImGuiToggleFlags_BorderedKnob           = 1 << 4, // The toggle should have a border drawn on the knob.
-                                                      // Bits 5-7 reserved.
+    ImGuiToggleFlags_ShadowedFrame          = 1 << 5, // The toggle should have a shadow drawn under the frame.
+    ImGuiToggleFlags_ShadowedKnob           = 1 << 6, // The toggle should have a shadow drawn under the knob.
+                                                      // Bit 7 reserved.
     ImGuiToggleFlags_A11y                   = 1 << 8, // The toggle should draw on and off glyphs to help indicate its state.
     ImGuiToggleFlags_Bordered               = ImGuiToggleFlags_BorderedFrame | ImGuiToggleFlags_BorderedKnob, // Shorthand for bordered frame and knob.
+    ImGuiToggleFlags_Shadowed               = ImGuiToggleFlags_ShadowedFrame | ImGuiToggleFlags_ShadowedKnob, // Shorthand for shadowed frame and knob.
     ImGuiToggleFlags_Default                = ImGuiToggleFlags_None, // The default flags used when no ImGuiToggleFlags_ are specified.
 };
 
@@ -114,6 +118,9 @@ namespace ImGuiToggleConstants
     // The default thickness for borders drawn on the toggle frame and knob.
     constexpr float BorderThicknessDefault = 1.0f;
 
+    // The default thickness for shadows drawn under the toggle frame and knob.
+    constexpr float ShadowThicknessDefault = 2.0f;
+
     // The default a11y string used when the toggle is on.
     const char* const LabelA11yOnDefault = "1";
 
@@ -126,8 +133,14 @@ struct ImGuiToggleStateConfig
     // The thickness the border should be drawn on the frame when ImGuiToggleFlags_BorderedFrame is specified in `Flags`.
     float FrameBorderThickness = ImGuiToggleConstants::BorderThicknessDefault;
 
+    // The thickness the shadow should be drawn on the frame when ImGuiToggleFlags_ShadowedFrame is specified in `Flags`.
+    float FrameShadowThickness = ImGuiToggleConstants::ShadowThicknessDefault;
+
     // The thickness the border should be drawn on the frame when ImGuiToggleFlags_BorderedKnob is specified in `Flags`.
     float KnobBorderThickness = ImGuiToggleConstants::BorderThicknessDefault;
+
+    // The thickness the shadow should be drawn on the frame when ImGuiToggleFlags_ShadowedKnob is specified in `Flags`.
+    float KnobShadowThickness = ImGuiToggleConstants::ShadowThicknessDefault;
 
     // The label drawn on the toggle to show the toggle is in the when ImGuiToggleFlags_A11yLabels is specified in `Flags`.
     // If left null, default strings will be used.

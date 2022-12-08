@@ -21,8 +21,14 @@ struct ImGuiTogglePalette
     // The background color of the toggle frame's border used when ImGuiToggleFlags_BorderedFrame is specified.
     ImVec4 FrameBorder;
 
+    // The shadow color of the toggle frame.
+    ImVec4 FrameShadow;
+
     // The background color of the toggle knob's border used when ImGuiToggleFlags_BorderedKnob is specified.
     ImVec4 KnobBorder;
+
+    // The shadow color of the toggle knob.
+    ImVec4 KnobShadow;
 
     // The color of the accessibility label or glyph.
     ImVec4 A11yGlyph;

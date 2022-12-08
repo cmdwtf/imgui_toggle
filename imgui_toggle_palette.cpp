@@ -17,7 +17,9 @@ void ImGui::UnionPalette(ImGuiTogglePalette* target, const ImGuiTogglePalette* c
     target->Frame = colors[!v ? ImGuiCol_FrameBg : ImGuiCol_Button];
     target->FrameHover = colors[!v ? ImGuiCol_FrameBgHovered : ImGuiCol_ButtonHovered];
     target->FrameBorder = colors[ImGuiCol_Border];
+    target->FrameShadow = colors[ImGuiCol_BorderShadow];
     target->KnobBorder = colors[ImGuiCol_Border];
+    target->KnobShadow = colors[ImGuiCol_BorderShadow];
     target->A11yGlyph = colors[!v ? ImGuiCol_FrameBg : ImGuiCol_Text];
 
     // if the user didn't provide a candidate, just provide the theme colored palette.
@@ -40,7 +42,9 @@ void ImGui::UnionPalette(ImGuiTogglePalette* target, const ImGuiTogglePalette* c
     GET_PALETTE_POPULATE_NONZERO(Frame);
     GET_PALETTE_POPULATE_NONZERO(FrameHover);
     GET_PALETTE_POPULATE_NONZERO(FrameBorder);
+    GET_PALETTE_POPULATE_NONZERO(FrameShadow);
     GET_PALETTE_POPULATE_NONZERO(KnobBorder);
+    GET_PALETTE_POPULATE_NONZERO(KnobShadow);
     GET_PALETTE_POPULATE_NONZERO(A11yGlyph);
 
 #undef GET_PALETTE_POPULATE_NONZERO
@@ -71,7 +75,9 @@ void ImGui::BlendPalettes(ImGuiTogglePalette* result, const ImGuiTogglePalette& 
     BLEND_PALETTES_LERP(Frame);
     BLEND_PALETTES_LERP(FrameHover);
     BLEND_PALETTES_LERP(FrameBorder);
+    BLEND_PALETTES_LERP(FrameShadow);
     BLEND_PALETTES_LERP(KnobBorder);
+    BLEND_PALETTES_LERP(KnobShadow);
     BLEND_PALETTES_LERP(A11yGlyph);
 
 #undef BLEND_PALETTES_LERP

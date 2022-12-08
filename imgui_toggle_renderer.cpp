@@ -165,10 +165,9 @@ void ImGuiToggleRenderer::DrawToggle()
     // get colors modified by hover.
     const ImU32 color_frame = ImGui::GetColorU32(_isHovered ? _palette.FrameHover : _palette.Frame);
     const ImU32 color_knob = ImGui::GetColorU32(_isHovered ? _palette.KnobHover : _palette.Knob);
-    const ImU32 color_knob_border = ImGui::GetColorU32(_palette.KnobBorder);
 
     // draw the background frame
-    DrawFrame(color_frame, ImGui::GetColorU32(_palette.FrameBorder));
+    DrawFrame(color_frame);
 
     // draw accessibility labels, if enabled.
     if (HasA11yGlyphs())
@@ -179,11 +178,11 @@ void ImGuiToggleRenderer::DrawToggle()
     // draw the knob
     if (HasCircleKnob())
     {
-        DrawCircleKnob(knob_radius, color_knob, color_knob_border);
+        DrawCircleKnob(knob_radius, color_knob);
     }
     else if (HasRectangleKnob())
     {
-        DrawRectangleKnob(knob_radius, color_knob, color_knob_border);
+        DrawRectangleKnob(knob_radius, color_knob);
     }
     else
     {
@@ -192,30 +191,28 @@ void ImGuiToggleRenderer::DrawToggle()
     }
 }
 
-void ImGuiToggleRenderer::DrawBorderCircle(const ImVec2& center, float radius, ImU32 color_border, float thickness)
-{
-    // the border should only grow "inside" the bounding box,
-    // so we need to shrink the radius used to prevent it from puffing out.
-    const float half_thickness = thickness * 0.5f;
-    radius -= half_thickness;
-
-    _drawList->AddCircle(center, radius, color_border, 0, thickness);
-}
-
-void ImGuiToggleRenderer::DrawFrame(ImU32 color_frame, ImU32 color_frame_border)
+void ImGuiToggleRenderer::DrawFrame(ImU32 color_frame)
 {
     const float height = GetHeight();
-    const float background_rounding = _config.FrameRounding >= 0
+    const float frame_rounding = _config.FrameRounding >= 0
         ? height * _config.FrameRounding
         : height * 0.5f;
 
+    // draw frame shadow, if enabled
+    if (HasShadowedFrame())
+    {
+        const ImU32 color_frame_shadow = ImGui::GetColorU32(_palette.FrameShadow);
+        DrawRectShadow(_boundingBox, color_frame_shadow, frame_rounding, _state.FrameShadowThickness);
+    }
+
     // draw frame background
-    _drawList->AddRectFilled(_boundingBox.Min, _boundingBox.Max, color_frame, background_rounding);
+    _drawList->AddRectFilled(_boundingBox.Min, _boundingBox.Max, color_frame, frame_rounding);
 
     // draw frame border, if enabled
     if (HasBorderedFrame())
     {
-        DrawBorderRect(_boundingBox, color_frame_border, background_rounding, _state.FrameBorderThickness);
+        const ImU32 color_frame_border = ImGui::GetColorU32(_palette.FrameBorder);
+        DrawRectBorder(_boundingBox, color_frame_border, frame_rounding, _state.FrameBorderThickness);
     }
 }
 
@@ -301,7 +298,7 @@ void ImGuiToggleRenderer::DrawA11yFrameOverlays(float knob_radius)
     DrawA11yFrameOverlay(knob_radius, false);
 }
 
-void ImGuiToggleRenderer::DrawCircleKnob(float radius, ImU32 color_knob, ImU32 color_knob_border)
+void ImGuiToggleRenderer::DrawCircleKnob(float radius, ImU32 color_knob)
 {
     const float inset_size = ImMin(_state.KnobInset.GetAverage(), radius);
     IM_ASSERT_USER_ERROR(inset_size <= radius, "Inset size needs to be smaller or equal to the knob's radius for circular knobs.");
@@ -309,22 +306,37 @@ void ImGuiToggleRenderer::DrawCircleKnob(float radius, ImU32 color_knob, ImU32 c
     const ImVec2 knob_center = CalculateKnobCenter(radius, _animationPercent, _state.KnobOffset);
     const float knob_radius = radius - inset_size;
 
+    // draw knob shadow, if enabled
+    if (HasShadowedKnob())
+    {
+        const ImU32 color_knob_shadow = ImGui::GetColorU32(_palette.KnobShadow);
+        DrawCircleShadow(knob_center, knob_radius, color_knob_shadow, _state.KnobShadowThickness);
+    }
+
     // draw circle knob
     _drawList->AddCircleFilled(knob_center, knob_radius, color_knob);
 
     // draw knob border, if enabled
     if (HasBorderedKnob())
     {
-        DrawBorderCircle(knob_center, knob_radius, color_knob_border, _state.KnobBorderThickness);
+        const ImU32 color_knob_border = ImGui::GetColorU32(_palette.KnobBorder);
+        DrawCircleBorder(knob_center, knob_radius, color_knob_border, _state.KnobBorderThickness);
     }
 }
 
-void ImGuiToggleRenderer::DrawRectangleKnob(float radius, ImU32 color_knob, ImU32 color_knob_border)
+void ImGuiToggleRenderer::DrawRectangleKnob(float radius, ImU32 color_knob)
 {
     const ImRect bounds = CalculateKnobBounds(radius, _animationPercent, _state.KnobOffset);
 
     const float knob_diameter_total = bounds.GetHeight();
     const float knob_rounded_radius = (knob_diameter_total * 0.5f) * _config.KnobRounding;
+
+    // draw knob shadow, if enabled
+    if (HasShadowedKnob())
+    {
+        const ImU32 color_knob_shadow = ImGui::GetColorU32(_palette.KnobShadow);
+        DrawRectShadow(bounds, color_knob_shadow, _config.KnobRounding, _state.KnobShadowThickness);
+    }
 
     // draw rectangle/squircle knob 
     _drawList->AddRectFilled(bounds.Min, bounds.Max, color_knob, knob_rounded_radius);
@@ -332,7 +344,8 @@ void ImGuiToggleRenderer::DrawRectangleKnob(float radius, ImU32 color_knob, ImU3
     // draw knob border, if enabled
     if (HasBorderedKnob())
     {
-        DrawBorderRect(bounds, color_knob_border, knob_rounded_radius, _state.KnobBorderThickness);
+        const ImU32 color_knob_border = ImGui::GetColorU32(_palette.KnobBorder);
+        DrawRectBorder(bounds, color_knob_border, knob_rounded_radius, _state.KnobBorderThickness);
     }
 }
 
@@ -463,7 +476,7 @@ ImRect ImGuiToggleRenderer::CalculateKnobBounds(float radius, float animation_pe
     return ImRect(knob_min, knob_max);
 }
 
-void ImGuiToggleRenderer::DrawBorderRect(ImRect bounds, ImU32 color_border, float rounding, float thickness)
+void ImGuiToggleRenderer::DrawRectBorder(ImRect bounds, ImU32 color_border, float rounding, float thickness)
 {
     // the border should only grow "inside" the bounding box,
     // so we need to shrink the bounds used to prevent it from puffing out.
@@ -471,4 +484,35 @@ void ImGuiToggleRenderer::DrawBorderRect(ImRect bounds, ImU32 color_border, floa
     bounds.Expand(-half_thickness);
 
     _drawList->AddRect(bounds.Min, bounds.Max, color_border, rounding, ImDrawFlags_None, thickness);
+}
+
+void ImGuiToggleRenderer::DrawCircleBorder(const ImVec2& center, float radius, ImU32 color_border, float thickness)
+{
+    // the border should only grow "inside" the bounding box,
+    // so we need to shrink the radius used to prevent it from puffing out.
+    const float half_thickness = thickness * 0.5f;
+    radius -= half_thickness;
+
+    _drawList->AddCircle(center, radius, color_border, 0, thickness);
+}
+
+
+void ImGuiToggleRenderer::DrawRectShadow(ImRect bounds, ImU32 color_shadow, float rounding, float thickness)
+{
+    // the shadow should only grow "outside" the bounding box,
+    // so we need to expand the bounds used to puff it out.
+    const float half_thickness = thickness * 0.5f;
+    bounds.Expand(half_thickness);
+
+    _drawList->AddRect(bounds.Min, bounds.Max, color_shadow, rounding, ImDrawFlags_None, thickness);
+}
+
+void ImGuiToggleRenderer::DrawCircleShadow(const ImVec2& center, float radius, ImU32 color_border, float thickness)
+{
+    // the shadow should only grow "outside" the bounding box,
+    // so we need to expand the radius used to puff it out.
+    const float half_thickness = thickness * 0.5f;
+    radius += half_thickness;
+
+    _drawList->AddCircle(center, radius, color_border, 0, thickness);
 }

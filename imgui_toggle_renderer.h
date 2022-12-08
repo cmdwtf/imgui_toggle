@@ -51,7 +51,9 @@ private:
     inline ImVec2 GetToggleSize() const { return _boundingBox.GetSize(); }
     inline bool IsAnimated() const { return (_config.Flags & ImGuiToggleFlags_Animated) != 0 && _config.AnimationDuration > 0; }
     inline bool HasBorderedFrame() const { return (_config.Flags & ImGuiToggleFlags_BorderedFrame) != 0 && _state.FrameBorderThickness > 0; }
+    inline bool HasShadowedFrame() const { return (_config.Flags & ImGuiToggleFlags_ShadowedKnob) != 0 && _state.FrameShadowThickness > 0; }
     inline bool HasBorderedKnob() const { return (_config.Flags & ImGuiToggleFlags_BorderedKnob) != 0 && _state.KnobBorderThickness > 0; }
+    inline bool HasShadowedKnob() const { return (_config.Flags & ImGuiToggleFlags_ShadowedKnob) != 0 && _state.KnobShadowThickness > 0; }
     inline bool HasA11yGlyphs() const { return (_config.Flags & ImGuiToggleFlags_A11y) != 0; }
     inline bool HasCircleKnob() const { return _config.KnobRounding >= 1.0f; }
     inline bool HasRectangleKnob() const { return _config.KnobRounding < 1.0f; }
@@ -64,7 +66,7 @@ private:
     void DrawToggle();
 
     // drawing - frame
-    void DrawFrame(ImU32 color_frame, ImU32 color_frame_border);
+    void DrawFrame(ImU32 color_frame);
 
     // drawing a11y
     void DrawA11yDot(const ImVec2& pos, ImU32 color);
@@ -74,8 +76,8 @@ private:
     void DrawA11yFrameOverlays(float knob_radius);
 
     // drawing - knob
-    void DrawCircleKnob(float radius, ImU32 color_knob, ImU32 color_knob_border);
-    void DrawRectangleKnob(float radius, ImU32 color_knob, ImU32 color_knob_border);
+    void DrawCircleKnob(float radius, ImU32 color_knob);
+    void DrawRectangleKnob(float radius, ImU32 color_knob);
 
     // drawing - label
     void DrawLabel(float x_offset);
@@ -88,6 +90,8 @@ private:
     // helpers
     ImVec2 CalculateKnobCenter(float radius, float animation_percent, const ImVec2& offset = ImVec2()) const;
     ImRect CalculateKnobBounds(float radius, float animation_percent, const ImVec2& offset = ImVec2()) const;
-    void DrawBorderRect(ImRect bounds, ImU32 color_border, float rounding, float thickness);
-    void DrawBorderCircle(const ImVec2& center, float radius, ImU32 color_border, float thickness);
+    void DrawRectBorder(ImRect bounds, ImU32 color_border, float rounding, float thickness);
+    void DrawCircleBorder(const ImVec2& center, float radius, ImU32 color_border, float thickness);
+    void DrawRectShadow(ImRect bounds, ImU32 color_shadow, float rounding, float thickness);
+    void DrawCircleShadow(const ImVec2& center, float radius, ImU32 color_shadow, float thickness);
 };
