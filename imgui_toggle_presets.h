@@ -11,6 +11,9 @@ namespace ImGuiTogglePresets
     // A style similar to default, but with rectangular knob and frame.
     ImGuiToggleConfig RectangleStyle();
 
+    // A style that uses a shadow to appear to glow while it's on.
+    ImGuiToggleConfig GlowingStyle();
+
     // A style that emulates what a toggle on iOS looks like.
     ImGuiToggleConfig iOSStyle(float size_scale = 1.0f, bool light_mode = false);
 

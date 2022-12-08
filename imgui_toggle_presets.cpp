@@ -1,6 +1,17 @@
 #include "imgui_toggle_presets.h"
 #include "imgui_toggle_palette.h"
 
+namespace
+{
+    // some color values shared between styles
+    const ImVec4 White(1.0f, 1.0f, 1.0f, 1.0f);
+    const ImVec4 Black(0.0f, 0.0f, 0.0f, 1.0f);
+    const ImVec4 Green(0.24f, 0.52f, 0.15f, 1.0f);
+    const ImVec4 GreenBorder(0.39f, 0.62f, 0.32f, 1.0f);
+    const ImVec4 GreenHighlight(0.3f, 1.0f, 0.0f, 0.75f);
+    const ImVec4 RedHighlight(1.0f, 0.3f, 0.0f, 0.75f);
+
+} // namespace
 
 ImGuiToggleConfig ImGuiTogglePresets::DefaultStyle()
 {
@@ -18,11 +29,28 @@ ImGuiToggleConfig ImGuiTogglePresets::RectangleStyle()
     return config;
 }
 
+ImGuiToggleConfig ImGuiTogglePresets::GlowingStyle()
+{
+    static ImGuiTogglePalette palette_on;
+    palette_on.FrameShadow = ::GreenHighlight;
+    palette_on.KnobShadow = ::GreenHighlight;
+
+    static ImGuiTogglePalette palette_off;
+    palette_off.FrameShadow = ::RedHighlight;
+    palette_off.KnobShadow = ::RedHighlight;
+
+    ImGuiToggleConfig config;
+    config.Flags |= ImGuiToggleFlags_Animated | ImGuiToggleFlags_Shadowed;
+    config.On.Palette = &palette_on;
+    config.Off.Palette = &palette_off;
+
+    return config;
+}
+
 ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float size_scale /*= 1.0f*/, bool light_mode /*= false*/)
 {
     const ImVec4 frame_on(0.3f, 0.85f, 0.39f, 1.0f);
     const ImVec4 frame_on_hover(0.0f, 1.0f, 0.57f, 1.0f);
-    const ImVec4 white(1.0f, 1.0f, 1.0f, 1.0f);
     const ImVec4 dark_mode_frame_off(0.22f, 0.22f, 0.24f, 1.0f);
     const ImVec4 light_mode_frame_off(0.91f, 0.91f, 0.92f, 1.0f);
     const ImVec4 dark_mode_frame_off_hover(0.4f, 0.4f, 0.4f, 1.0f);
@@ -40,7 +68,7 @@ ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float size_scale /*= 1.0f*/
 
     // setup 'on' colors
     static ImGuiTogglePalette ios_palette_on;
-    ios_palette_on.Knob = white;
+    ios_palette_on.Knob = ::White;
     ios_palette_on.Frame = frame_on;
     ios_palette_on.FrameHover = frame_on_hover;
     ios_palette_on.KnobBorder = light_gray;
@@ -49,7 +77,7 @@ ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float size_scale /*= 1.0f*/
 
     // setup 'off' colors
     static ImGuiTogglePalette ios_palette_off;
-    ios_palette_off.Knob = white;
+    ios_palette_off.Knob = ::White;
     ios_palette_off.Frame = light_mode ? light_mode_frame_off : dark_mode_frame_off;
     ios_palette_off.FrameHover = light_mode ? light_mode_frame_off_hover : light_mode_frame_off_hover;
     ios_palette_off.KnobBorder = light_gray;
@@ -87,9 +115,7 @@ ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
     const ImVec4 purple_dim(0.78f, 0.65f, 0.99f, 1.0f);
     const ImVec4 purple_hover(0.53f, 0.08f, 1.0f, 1.0f);
 
-    const ImVec2 material_size(37 * size_scale, 16 * size_scale);
     const float material_inset = -2.5f;
-    const ImVec2 material_offset(-material_inset, 0);
 
     static ImGuiTogglePalette material_palette_on;
     material_palette_on.Frame = purple_dim;
@@ -100,9 +126,9 @@ ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
     // setup config
     ImGuiToggleConfig config;
     config.Flags |= ImGuiToggleFlags_Animated;
-    config.Size = material_size;
+    config.Size = ImVec2(37, 16);
     config.On.KnobInset = config.Off.KnobInset = material_inset;
-    config.On.KnobOffset = config.Off.KnobOffset = material_offset;
+    config.On.KnobOffset = config.Off.KnobOffset = ImVec2(-material_inset, 0);
     config.On.Palette = &material_palette_on;
 
     return config;
