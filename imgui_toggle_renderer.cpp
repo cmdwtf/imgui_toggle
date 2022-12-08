@@ -266,7 +266,7 @@ void ImGuiToggleRenderer::DrawA11yFrameOverlay(float knob_radius, bool state)
     // but this is subject to change.
     const float diameter = ImMax(1.0f, GetHeight() / 3.0f);
     const float radius = diameter * 0.5f;
-    const float thickness = radius * 0.2f;
+    const float thickness = ImCeil(radius * 0.2f);
     const ImVec2 adjustment = ImVec2(radius - thickness, 0.0f)
         * (state ? -1.0f : 1.0f); // if state is true, we want to subtract rather than add.
 
