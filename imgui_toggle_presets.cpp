@@ -115,7 +115,8 @@ ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
     const ImVec4 purple_dim(0.78f, 0.65f, 0.99f, 1.0f);
     const ImVec4 purple_hover(0.53f, 0.08f, 1.0f, 1.0f);
 
-    const float material_inset = -2.5f;
+    const ImVec2 material_size(37 * size_scale, 16 * size_scale);
+    const float material_inset = -2.5f * size_scale;
 
     static ImGuiTogglePalette material_palette_on;
     material_palette_on.Frame = purple_dim;
@@ -126,10 +127,77 @@ ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
     // setup config
     ImGuiToggleConfig config;
     config.Flags |= ImGuiToggleFlags_Animated;
-    config.Size = ImVec2(37, 16);
+    config.Size = material_size;
     config.On.KnobInset = config.Off.KnobInset = material_inset;
     config.On.KnobOffset = config.Off.KnobOffset = ImVec2(-material_inset, 0);
     config.On.Palette = &material_palette_on;
+
+    return config;
+}
+
+ImGuiToggleConfig ImGuiTogglePresets::MinecraftStyle(float size_scale /*= 1.0f*/)
+{
+    const ImVec4 gray(0.35f, 0.35f, 0.35f, 1.0f);
+    const ImVec4 dark_gray(0.12f, 0.12f, 0.12f, 1.0f);
+    const ImVec4 frame_border_off(0.6f, 0.6f, 0.61f, 1.0f);
+    const ImVec4 toggle_frame_off(0.55f, 0.55f, 0.56f, 1.0f);
+    const ImVec4 gray_knob(0.82f, 0.82f, 0.83f, 1.0f);
+
+    const ImVec2 minecraft_knob_size(56.0f * size_scale, 40.0f * size_scale);
+    const ImVec2 minecraft_size(104.0f * size_scale, 40.0f * size_scale); // 112x48
+    const float minecraft_borders = 4.0f * size_scale;
+    const ImVec2 minecraft_offset(0.0f * size_scale, -minecraft_borders * 2.0f);
+    const ImOffsetRect minecraft_inset(
+        0.0f * size_scale, // top
+        -16.0f * size_scale, // left
+        0.0f * size_scale, // bottom
+        0.0f * size_scale  // right
+    );
+    const float minecraft_rounding = 0.0f; // disable rounding
+    const float minecraft_shadows = 4.0f * size_scale;
+
+    // set up the "on" palette.
+    static ImGuiTogglePalette minecraft_palette_on;
+    minecraft_palette_on.Frame = ::Green;
+    minecraft_palette_on.FrameHover = ::Green;
+    minecraft_palette_on.FrameBorder = ::GreenBorder;
+    minecraft_palette_on.FrameShadow = ::Black;
+    minecraft_palette_on.Knob = gray_knob;
+    minecraft_palette_on.KnobHover = gray_knob;
+    minecraft_palette_on.A11yGlyph = ::White;
+    minecraft_palette_on.KnobBorder = ::White;
+    minecraft_palette_on.KnobShadow = ::Black;
+
+    // start the "off" palette as a copy of the on
+    static ImGuiTogglePalette minecraft_palette_off;
+    minecraft_palette_off = minecraft_palette_on;
+
+    // make changes to the off palette
+    minecraft_palette_off.Frame = toggle_frame_off;
+    minecraft_palette_off.FrameHover = toggle_frame_off;
+    minecraft_palette_off.FrameBorder = frame_border_off;
+
+    // setup config
+    ImGuiToggleConfig config;
+    config.Flags |= ImGuiToggleFlags_A11y | ImGuiToggleFlags_Bordered | ImGuiToggleFlags_Shadowed;
+    config.Size = minecraft_size;
+    config.FrameRounding = minecraft_rounding;
+    config.KnobRounding = minecraft_rounding;
+    config.A11yStyle = ImGuiToggleA11yStyle_Glyph;
+
+    // set up the "on" state configuration
+    config.On.KnobInset = minecraft_inset;
+    config.On.KnobOffset = minecraft_offset;
+    config.On.FrameBorderThickness = minecraft_borders;
+    config.On.FrameShadowThickness = minecraft_shadows;
+    config.On.KnobBorderThickness = minecraft_borders;
+    config.On.KnobShadowThickness = minecraft_shadows;
+    config.On.Palette = &minecraft_palette_on;
+
+    // duplicate the "on" config to the "off", then make changes.
+    config.Off = config.On;
+    config.Off.KnobInset = minecraft_inset.MirrorHorizontally();
+    config.Off.Palette = &minecraft_palette_off;
 
     return config;
 }

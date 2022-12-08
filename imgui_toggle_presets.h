@@ -20,4 +20,6 @@ namespace ImGuiTogglePresets
     // A style that emulates what a Material Design toggle looks like.
     ImGuiToggleConfig MaterialStyle(float size_scale = 1.0f);
 
+    // A style that emulates what a toggle close to one from Minecraft.
+    ImGuiToggleConfig MinecraftStyle(float size_scale = 1.0f);
 }
