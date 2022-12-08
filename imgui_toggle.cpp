@@ -108,7 +108,8 @@ namespace
 {
     bool ToggleInternal(const char* label, bool* v, const ImGuiToggleConfig& config)
     {
-        ImGuiToggleRenderer renderer(label, v, config);
+        static thread_local ImGuiToggleRenderer renderer;
+        renderer.SetConfig(label, v, config);
         return renderer.Render();
     }
 }

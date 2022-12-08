@@ -12,7 +12,9 @@
 class ImGuiToggleRenderer
 {
 public:
+    ImGuiToggleRenderer();
     ImGuiToggleRenderer(const char* label, bool* value, const ImGuiToggleConfig& user_config);
+    void SetConfig(const char* label, bool* value, const ImGuiToggleConfig& user_config);
     bool Render();
 
 private:

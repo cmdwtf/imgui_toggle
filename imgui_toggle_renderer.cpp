@@ -14,8 +14,22 @@ namespace
     }
 } // namespace
 
+ImGuiToggleRenderer::ImGuiToggleRenderer()
+{
+    SetConfig(nullptr, nullptr, ImGuiToggleConfig());
+}
+
 ImGuiToggleRenderer::ImGuiToggleRenderer(const char* label, bool* value, const ImGuiToggleConfig& user_config) : _style(nullptr), _label(label), _value(value)
 {
+    SetConfig(label, value, user_config);
+}
+
+void ImGuiToggleRenderer::SetConfig(const char* label, bool* value, const ImGuiToggleConfig& user_config)
+{
+    // store mandatory settings
+    _label = label;
+    _value = value;
+
     // copy our user's config and ensure it's valid.
     _config = user_config;
     ValidateConfig();
@@ -26,6 +40,8 @@ bool ImGuiToggleRenderer::Render()
     ImGuiWindow* window = ImGui::GetCurrentWindow();
 
     IM_ASSERT(window);
+    IM_ASSERT(_label != nullptr);
+    IM_ASSERT(_value != nullptr);
 
     if (window->SkipItems)
     {
