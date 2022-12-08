@@ -427,12 +427,11 @@ ImVec2 ImGuiToggleRenderer::CalculateKnobCenter(float radius, float animation_pe
 {
     const ImVec2 pos = GetPosition();
     const float double_radius = radius * 2.0f;
-    const float half_knob_x_offset = offset.x * 0.5f;
     const float animation_percent_inverse = 1.0f - animation_percent;
 
     const float knob_x = (pos.x + radius)
-        + animation_percent * (GetWidth() - double_radius - half_knob_x_offset)
-        + (animation_percent_inverse * half_knob_x_offset);
+        + animation_percent * (GetWidth() - double_radius - offset.x)
+        + (animation_percent_inverse * offset.x);
     const float knob_y = pos.y + radius + offset.y;
     return ImVec2(knob_x, knob_y);
 }
@@ -443,9 +442,8 @@ ImRect ImGuiToggleRenderer::CalculateKnobBounds(float radius, float animation_pe
     const float double_radius = radius * 2.0f;
     const float animation_percent_inverse = 1.0f - animation_percent;
 
-    const float half_knob_x_offset = _state.KnobOffset.x * 0.5f;
-    const float knob_left = (animation_percent * (GetWidth() - double_radius - half_knob_x_offset))
-        + (animation_percent_inverse * half_knob_x_offset)
+    const float knob_left = (animation_percent * (GetWidth() - double_radius - offset.x))
+        + (animation_percent_inverse * offset.x)
         + _state.KnobInset.Left;
     const float knob_top = _state.KnobInset.Top + _state.KnobOffset.y;
     const float knob_bottom = GetHeight() - _state.KnobInset.Bottom + _state.KnobOffset.y;

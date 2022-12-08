@@ -81,11 +81,15 @@ ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float size_scale /*= 1.0f*/
     return config;
 }
 
-ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle()
+ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
 {
     const ImVec4 purple(0.4f, 0.08f, 0.97f, 1.0f);
     const ImVec4 purple_dim(0.78f, 0.65f, 0.99f, 1.0f);
     const ImVec4 purple_hover(0.53f, 0.08f, 1.0f, 1.0f);
+
+    const ImVec2 material_size(37 * size_scale, 16 * size_scale);
+    const float material_inset = -2.5f;
+    const ImVec2 material_offset(-material_inset, 0);
 
     static ImGuiTogglePalette material_palette_on;
     material_palette_on.Frame = purple_dim;
@@ -96,9 +100,9 @@ ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle()
     // setup config
     ImGuiToggleConfig config;
     config.Flags |= ImGuiToggleFlags_Animated;
-    config.Size = ImVec2(37, 16);
-    config.On.KnobInset = config.Off.KnobInset = -2.5f;
-    config.On.KnobOffset = config.Off.KnobOffset = ImVec2(-2.0f, 0);
+    config.Size = material_size;
+    config.On.KnobInset = config.Off.KnobInset = material_inset;
+    config.On.KnobOffset = config.Off.KnobOffset = material_offset;
     config.On.Palette = &material_palette_on;
 
     return config;

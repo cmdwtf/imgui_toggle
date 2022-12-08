@@ -15,5 +15,6 @@ namespace ImGuiTogglePresets
     ImGuiToggleConfig iOSStyle(float size_scale = 1.0f, bool light_mode = false);
 
     // A style that emulates what a Material Design toggle looks like.
-    ImGuiToggleConfig MaterialStyle();
+    ImGuiToggleConfig MaterialStyle(float size_scale = 1.0f);
+
 }
