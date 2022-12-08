@@ -78,7 +78,10 @@ static void imgui_toggle_custom()
 	static ImGuiToggleConfig config;
 	static bool toggle_custom = true;
 
+	ImGui::NewLine();
+
 	ImGui::Toggle("Customized Toggle", &toggle_custom, config);
+
 	ImGui::NewLine();
 
 	// these first settings are used no matter the toggle's state.
@@ -145,6 +148,10 @@ static void imgui_toggle_custom()
 
 	// should the toggle have borders (sets all border flags)
 	ImGui::CheckboxFlags("Bordered", &config.Flags, ImGuiToggleFlags_Bordered);
+
+	// should the toggle have shadows (sets all shadow flags)
+	ImGui::CheckboxFlags("Shadowed", &config.Flags, ImGuiToggleFlags_Shadowed);
+
 	ImGui::NextColumn();
 
 	// should the toggle animate
@@ -156,6 +163,12 @@ static void imgui_toggle_custom()
 	// should the toggle have a bordered knob
 	ImGui::CheckboxFlags("BorderedKnob", &config.Flags, ImGuiToggleFlags_BorderedKnob);
 
+	// should the toggle have a shadowed frame
+	ImGui::CheckboxFlags("ShadowedFrame", &config.Flags, ImGuiToggleFlags_ShadowedFrame);
+
+	// should the toggle have a shadowed knob
+	ImGui::CheckboxFlags("ShadowedKnob", &config.Flags, ImGuiToggleFlags_ShadowedKnob);
+
 	// should the toggle draw a11y glyphs
 	ImGui::CheckboxFlags("A11y", &config.Flags, ImGuiToggleFlags_A11y);
 	ImGui::Columns();
@@ -163,7 +176,7 @@ static void imgui_toggle_custom()
 	ImGui::Separator();
 
 	// what follows are some configuration presets. check the source of those functions to see how they work.
-	ImGui::Text("Configuration Presets");
+	ImGui::Text("Configuration Style Presets");
 
 	if (ImGui::Button("Reset to Default"))
 	{
@@ -171,21 +184,33 @@ static void imgui_toggle_custom()
 	}
 	ImGui::SameLine();
 
-	if (ImGui::Button("Rectangle Style"))
+	if (ImGui::Button("Rectangle"))
 	{
 		config = ImGuiTogglePresets::RectangleStyle();
 	}
 	ImGui::SameLine();
 
-	if (ImGui::Button("iOS Style"))
+	if (ImGui::Button("Glowing"))
+	{
+		config = ImGuiTogglePresets::GlowingStyle();
+	}
+	ImGui::SameLine();
+
+	if (ImGui::Button("iOS"))
 	{
 		config = ImGuiTogglePresets::iOSStyle();
 	}
 	ImGui::SameLine();
 
-	if (ImGui::Button("Material Style"))
+	if (ImGui::Button("Material"))
 	{
 		config = ImGuiTogglePresets::MaterialStyle();
+	}
+	ImGui::SameLine();
+
+	if (ImGui::Button("Minecraft"))
+	{
+		config = ImGuiTogglePresets::MinecraftStyle();
 	}
 }
 
@@ -219,5 +244,4 @@ static void imgui_toggle_state(const ImGuiToggleConfig& config, ImGuiToggleState
 	// how thick should the knob border be (if enabled)
 	ImGui::SliderFloat("Knob Border Thickness (px)", &state.KnobBorderThickness, 0.0f, border_thickness_max_pixels);
 }
-
 ```
