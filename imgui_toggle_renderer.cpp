@@ -306,7 +306,7 @@ void ImGuiToggleRenderer::DrawCircleKnob(float radius, ImU32 color_knob, ImU32 c
     const float inset_size = ImMin(_state.KnobInset.GetAverage(), radius);
     IM_ASSERT_USER_ERROR(inset_size <= radius, "Inset size needs to be smaller or equal to the knob's radius for circular knobs.");
 
-    const ImVec2 knob_center = CalculateKnobCenter(radius, _animationPercent);
+    const ImVec2 knob_center = CalculateKnobCenter(radius, _animationPercent, _state.KnobOffset);
     const float knob_radius = radius - inset_size;
 
     // draw circle knob
@@ -321,7 +321,7 @@ void ImGuiToggleRenderer::DrawCircleKnob(float radius, ImU32 color_knob, ImU32 c
 
 void ImGuiToggleRenderer::DrawRectangleKnob(float radius, ImU32 color_knob, ImU32 color_knob_border)
 {
-    const ImRect bounds = CalculateKnobBounds(radius, _animationPercent);
+    const ImRect bounds = CalculateKnobBounds(radius, _animationPercent, _state.KnobOffset);
 
     const float knob_diameter_total = bounds.GetHeight();
     const float knob_rounded_radius = (knob_diameter_total * 0.5f) * _config.KnobRounding;
@@ -423,21 +423,21 @@ void ImGuiToggleRenderer::UpdatePalette()
     _colorA11yGlyphOn = on_unioned.A11yGlyph;
 }
 
-ImVec2 ImGuiToggleRenderer::CalculateKnobCenter(float radius, float animation_percent) const
+ImVec2 ImGuiToggleRenderer::CalculateKnobCenter(float radius, float animation_percent, const ImVec2& offset /*= ImVec2()*/) const
 {
     const ImVec2 pos = GetPosition();
     const float double_radius = radius * 2.0f;
-    const float half_knob_x_offset = _state.KnobOffset.x * 0.5f;
+    const float half_knob_x_offset = offset.x * 0.5f;
     const float animation_percent_inverse = 1.0f - animation_percent;
 
     const float knob_x = (pos.x + radius)
         + animation_percent * (GetWidth() - double_radius - half_knob_x_offset)
         + (animation_percent_inverse * half_knob_x_offset);
-    const float knob_y = pos.y + radius + _state.KnobOffset.y;
+    const float knob_y = pos.y + radius + offset.y;
     return ImVec2(knob_x, knob_y);
 }
 
-ImRect ImGuiToggleRenderer::CalculateKnobBounds(float radius, float animation_percent) const
+ImRect ImGuiToggleRenderer::CalculateKnobBounds(float radius, float animation_percent, const ImVec2& offset /*= ImVec2()*/) const
 {
     const ImVec2 position = GetPosition();
     const float double_radius = radius * 2.0f;

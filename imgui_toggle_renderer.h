@@ -86,8 +86,8 @@ private:
     void UpdatePalette();
 
     // helpers
-    ImVec2 CalculateKnobCenter(float radius, float animation_percent) const;
-    ImRect CalculateKnobBounds(float radius, float animation_percent) const;
+    ImVec2 CalculateKnobCenter(float radius, float animation_percent, const ImVec2& offset = ImVec2()) const;
+    ImRect CalculateKnobBounds(float radius, float animation_percent, const ImVec2& offset = ImVec2()) const;
     void DrawBorderRect(ImRect bounds, ImU32 color_border, float rounding, float thickness);
     void DrawBorderCircle(const ImVec2& center, float radius, ImU32 color_border, float thickness);
 };
