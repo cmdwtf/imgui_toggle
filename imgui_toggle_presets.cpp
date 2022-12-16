@@ -11,6 +11,12 @@ namespace
     const ImVec4 GreenHighlight(0.3f, 1.0f, 0.0f, 0.75f);
     const ImVec4 RedHighlight(1.0f, 0.3f, 0.0f, 0.75f);
 
+    // DPI aware scale utility: the scale should proportional to the font size
+    // font Size is typically 14.5 on normal DPI screens, and 29 on windows HighDPI
+    float DpiFactor()
+    {
+        return ImGui::GetFontSize() / 14.5f;
+    }
 } // namespace
 
 ImGuiToggleConfig ImGuiTogglePresets::DefaultStyle()
@@ -47,8 +53,11 @@ ImGuiToggleConfig ImGuiTogglePresets::GlowingStyle()
     return config;
 }
 
-ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float size_scale /*= 1.0f*/, bool light_mode /*= false*/)
+
+ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float _size_scale /*= 1.0f*/, bool light_mode /*= false*/)
 {
+    float size_scale = _size_scale * DpiFactor();
+
     const ImVec4 frame_on(0.3f, 0.85f, 0.39f, 1.0f);
     const ImVec4 frame_on_hover(0.0f, 1.0f, 0.57f, 1.0f);
     const ImVec4 dark_mode_frame_off(0.22f, 0.22f, 0.24f, 1.0f);
@@ -109,8 +118,10 @@ ImGuiToggleConfig ImGuiTogglePresets::iOSStyle(const float size_scale /*= 1.0f*/
     return config;
 }
 
-ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
+ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float _size_scale /*= 1.0f*/)
 {
+    float size_scale = DpiFactor() * _size_scale;
+
     const ImVec4 purple(0.4f, 0.08f, 0.97f, 1.0f);
     const ImVec4 purple_dim(0.78f, 0.65f, 0.99f, 1.0f);
     const ImVec4 purple_hover(0.53f, 0.08f, 1.0f, 1.0f);
@@ -135,8 +146,10 @@ ImGuiToggleConfig ImGuiTogglePresets::MaterialStyle(float size_scale /*= 1.0f*/)
     return config;
 }
 
-ImGuiToggleConfig ImGuiTogglePresets::MinecraftStyle(float size_scale /*= 1.0f*/)
+ImGuiToggleConfig ImGuiTogglePresets::MinecraftStyle(float _size_scale /*= 1.0f*/)
 {
+    float size_scale = DpiFactor() * _size_scale;
+
     const ImVec4 gray(0.35f, 0.35f, 0.35f, 1.0f);
     const ImVec4 dark_gray(0.12f, 0.12f, 0.12f, 1.0f);
     const ImVec4 frame_border_off(0.6f, 0.6f, 0.61f, 1.0f);
