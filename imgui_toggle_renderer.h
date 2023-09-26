@@ -30,7 +30,6 @@ private:
     float _animationPercent;
 
     // imgui specific context
-    const ImGuiContext* g;
     const ImGuiStyle* _style;
     ImDrawList* _drawList;
     ImGuiID _id;
