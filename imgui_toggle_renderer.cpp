@@ -10,7 +10,7 @@ namespace
     // a small helper to quickly check the mixed value flag.
     inline bool IsItemMixedValue()
     {
-        return (GImGui->LastItemData.InFlags & ImGuiItemFlags_MixedValue) != 0;
+        return (GImGui->LastItemData.ItemFlags & ImGuiItemFlags_MixedValue) != 0;
     }
 } // namespace
 
