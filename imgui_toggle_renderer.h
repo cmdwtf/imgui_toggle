@@ -51,7 +51,7 @@ private:
     inline ImVec2 GetToggleSize() const { return _boundingBox.GetSize(); }
     inline bool IsAnimated() const { return (_config.Flags & ImGuiToggleFlags_Animated) != 0 && _config.AnimationDuration > 0; }
     inline bool HasBorderedFrame() const { return (_config.Flags & ImGuiToggleFlags_BorderedFrame) != 0 && _state.FrameBorderThickness > 0; }
-    inline bool HasShadowedFrame() const { return (_config.Flags & ImGuiToggleFlags_ShadowedKnob) != 0 && _state.FrameShadowThickness > 0; }
+    inline bool HasShadowedFrame() const { return (_config.Flags & ImGuiToggleFlags_ShadowedFrame) != 0 && _state.FrameShadowThickness > 0; }
     inline bool HasBorderedKnob() const { return (_config.Flags & ImGuiToggleFlags_BorderedKnob) != 0 && _state.KnobBorderThickness > 0; }
     inline bool HasShadowedKnob() const { return (_config.Flags & ImGuiToggleFlags_ShadowedKnob) != 0 && _state.KnobShadowThickness > 0; }
     inline bool HasA11yGlyphs() const { return (_config.Flags & ImGuiToggleFlags_A11y) != 0; }
