@@ -218,7 +218,7 @@ void ImGuiToggleRenderer::DrawFrame(ImU32 color_frame)
     if (HasBorderedFrame())
     {
         const ImU32 color_frame_border = ImGui::GetColorU32(_palette.FrameBorder);
-        DrawRectBorder(_boundingBox, color_frame_border, frame_rounding, _state.FrameBorderThickness);
+        DrawRectBorder(_boundingBox, color_frame_border, frame_rounding, GetFrameBorderThickness());
     }
 }
 
