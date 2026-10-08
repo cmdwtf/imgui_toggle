@@ -13,10 +13,12 @@ using namespace ImGuiToggleMath;
 void ImGui::UnionPalette(ImGuiTogglePalette* target, const ImGuiTogglePalette* candidate, const ImVec4 colors[], bool v)
 {
 
-    target->Knob = colors[ImGuiCol_Text];
-    target->KnobHover = colors[ImGuiCol_Text];
-    target->Frame = colors[!v ? ImGuiCol_FrameBg : ImGuiCol_Button];
-    target->FrameHover = colors[!v ? ImGuiCol_FrameBgHovered : ImGuiCol_ButtonHovered];
+    // on, the frame takes the theme's accent for "checked", as a checkbox's mark (ImGuiCol_Button is gray in many themes),
+    // and the knob the window's background, which stands out on it
+    target->Knob = colors[!v ? ImGuiCol_Text : ImGuiCol_WindowBg];
+    target->KnobHover = colors[!v ? ImGuiCol_Text : ImGuiCol_WindowBg];
+    target->Frame = colors[!v ? ImGuiCol_FrameBg : ImGuiCol_CheckMark];
+    target->FrameHover = colors[!v ? ImGuiCol_FrameBgHovered : ImGuiCol_CheckMark];
     target->FrameBorder = colors[ImGuiCol_Border];
     target->FrameShadow = colors[ImGuiCol_BorderShadow];
     target->KnobBorder = colors[ImGuiCol_Border];
